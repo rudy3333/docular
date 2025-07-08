@@ -6,6 +6,16 @@ import LoginPage from "./LoginPage";
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('token'));
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+  };
 
   useEffect(() => {
     function customSmoothScroll(e) {
@@ -42,6 +52,16 @@ function App() {
     return () => document.removeEventListener('click', customSmoothScroll);
   }, []);
 
+  const openSignUpModal = () => {
+    setShowSignUp(true);
+    setShowLogin(false);
+  };
+
+  const openLoginModal = () => {
+    setShowLogin(true);
+    setShowSignUp(false);
+  };
+
   return (
     <div className="landing-page">
       {/* Header Navigation */}
@@ -50,8 +70,14 @@ function App() {
         <div className="nav-links">
           <a className="nav-link" href="#about">About</a>
           <a className="nav-link" href="#features">Features</a>
-          <button className="cta-button" onClick={() => setShowSignUp(true)} style={{ marginLeft: '1.5rem' }}>Sign Up</button>
-          <button className="cta-button" onClick={() => setShowLogin(true)} style={{ marginLeft: '0.5rem' }}>Login</button>
+          {isLoggedIn ? (
+            <button className="cta-button" onClick={handleLogout}>Logout</button>
+          ) : (
+            <>
+              <button className="cta-button" onClick={openLoginModal}>Login</button>
+              <button className="cta-button" onClick={openSignUpModal}>Sign Up</button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -113,7 +139,7 @@ function App() {
         <p>&copy; {new Date().getFullYear()} Docular. All rights reserved.</p>
       </footer>
       {showSignUp && <SignUpPage onClose={() => setShowSignUp(false)} switchToLogin={() => { setShowSignUp(false); setShowLogin(true); }} />}
-      {showLogin && <LoginPage onClose={() => setShowLogin(false)} switchToSignUp={() => { setShowLogin(false); setShowSignUp(true); }} />}
+      {showLogin && <LoginPage onClose={() => setShowLogin(false)} switchToSignUp={() => { setShowLogin(false); setShowSignUp(true); }} setIsLoggedIn={setIsLoggedIn} />}
       <div id="bottom" style={{height: '1px'}}></div>
     </div>
   );

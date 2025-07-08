@@ -6,3 +6,4 @@ pyairtable
 bcrypt
 pydantic
 pydantic[email]
+pyjwt

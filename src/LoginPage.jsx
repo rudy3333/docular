@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function LoginPage({ onClose, switchToSignUp }) {
+function LoginPage({ onClose, switchToSignUp, setIsLoggedIn }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
@@ -23,6 +23,13 @@ function LoginPage({ onClose, switchToSignUp }) {
       if (data.success) {
         setMessage({ type: "success", text: "Login successful!" });
         setForm({ email: "", password: "" });
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        if (setIsLoggedIn) setIsLoggedIn(true);
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 2000);
       } else {
         setMessage({ type: "error", text: data.error || "Login failed." });
       }
@@ -52,7 +59,19 @@ function LoginPage({ onClose, switchToSignUp }) {
               {loading ? "Logging in..." : "Login"}
             </button>
             {message && (
-              <div style={{ color: message.type === "error" ? "red" : "green", marginTop: "1rem" }}>
+              <div style={{
+                color: message.type === "error" ? "red" : "#22c55e",
+                background: message.type === "success" ? "#e6ffe6" : message.type === "error" ? "#ffe6e6" : "transparent",
+                fontWeight: message.type === "success" || message.type === "error" ? "bold" : "normal",
+                borderRadius: "4px",
+                padding: "0.5rem 1rem",
+                marginTop: "1rem",
+                boxShadow: message.type === "success"
+                  ? "0 0 8px #22c55e55"
+                  : message.type === "error"
+                  ? "0 0 8px #ff000055"
+                  : "none"
+              }}>
                 {message.text}
               </div>
             )}

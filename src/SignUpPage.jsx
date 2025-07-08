@@ -23,6 +23,9 @@ function SignUpPage({ onClose, switchToLogin }) {
       if (data.success) {
         setMessage({ type: "success", text: "Account created!" });
         setForm({ name: "", email: "", password: "" });
+        setTimeout(() => {
+          if (onClose) onClose();
+        }, 2000);
       } else {
         setMessage({ type: "error", text: data.error || "Sign up failed." });
       }
@@ -56,7 +59,19 @@ function SignUpPage({ onClose, switchToLogin }) {
               {loading ? "Creating..." : "Create Account"}
             </button>
             {message && (
-              <div style={{ color: message.type === "error" ? "red" : "green", marginTop: "1rem" }}>
+              <div style={{
+                color: message.type === "error" ? "red" : "#22c55e",
+                background: message.type === "success" ? "#e6ffe6" : message.type === "error" ? "#ffe6e6" : "transparent",
+                fontWeight: message.type === "success" || message.type === "error" ? "bold" : "normal",
+                borderRadius: "4px",
+                padding: "0.5rem 1rem",
+                marginTop: "1rem",
+                boxShadow: message.type === "success"
+                  ? "0 0 8px #22c55e55"
+                  : message.type === "error"
+                  ? "0 0 8px #ff000055"
+                  : "none"
+              }}>
                 {message.text}
               </div>
             )}
