@@ -56,7 +56,7 @@ function App() {
       <header className="hero">
         <h1 className="hero-title">THE AI<br />document chat.</h1>
         <p className="tagline">Docular is an AI that lets you chat with your documents and get instant answers — in real time.</p>
-        <a href="#get-started" className="cta-button">Get Started</a>
+        <a href="#bottom" className="cta-button">Get Started</a>
       </header>
 
       {/* About Section */}
@@ -102,7 +102,7 @@ function App() {
       <section className="cta-section">
         <h2>Ready to get started?</h2>
         <p>Join thousands of students and professionals using Docular to supercharge their productivity.</p>
-        <a href="#signup" className="cta-button" style={{fontSize: '1.3rem', padding: '1.2rem 3rem'}}>Sign Up Free</a>
+        <button className="cta-button" style={{fontSize: '1.3rem', padding: '1.2rem 3rem'}} onClick={() => setShowSignUp(true)}>Sign Up Free</button>
       </section>
 
       {/* Footer */}
@@ -110,6 +110,7 @@ function App() {
         <p>&copy; {new Date().getFullYear()} Docular. All rights reserved.</p>
       </footer>
       {showSignUp && <SignUpPage onClose={() => setShowSignUp(false)} />}
+      <div id="bottom" style={{height: '1px'}}></div>
     </div>
   );
 }
