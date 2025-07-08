@@ -28,32 +28,58 @@ body, html, #root, .landing-page {
   justify-content: space-between;
   align-items: center;
   padding: 2rem 4vw 1rem 4vw;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   width: 100%;
   box-sizing: border-box;
+  border-bottom: 1.5px solid #e0e0e0;
+  border-radius: 0 0 1.5rem 1.5rem;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .logo {
-  font-weight: 700;
-  font-size: 1.5rem;
-  letter-spacing: -1px;
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: -1.5px;
+  color: #1a5c1a;
+  text-shadow: 0 2px 8px rgba(34,139,34,0.08);
+  padding: 0.3em 1em;
+  border-radius: 1em;
+  background: linear-gradient(90deg, #e6f7e6 60%, #c2e9c2 100%);
+  box-shadow: 0 2px 8px 0 rgba(34,139,34,0.04);
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.logo:hover {
+  background: linear-gradient(90deg, #c2e9c2 60%, #e6f7e6 100%);
+  color: #388e3c;
+  box-shadow: 0 4px 16px 0 rgba(34,139,34,0.10);
 }
 
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 2.5rem;
+  align-items: center;
 }
 
 .nav-link {
   color: #222;
   text-decoration: none;
-  font-weight: 500;
-  font-size: 1rem;
-  transition: color 0.2s;
+  font-weight: 600;
+  font-size: 1.08rem;
+  letter-spacing: 0.02em;
+  padding: 0.5em 1.2em;
+  border-radius: 1em;
+  transition: color 0.2s, background 0.2s, box-shadow 0.2s;
 }
 
 .nav-link:hover {
-  color: #007aff;
+  color: #fff;
+  background: #007aff;
+  box-shadow: 0 2px 8px 0 rgba(0,122,255,0.10);
 }
 
 .hero {
@@ -92,14 +118,16 @@ body, html, #root, .landing-page {
   border-radius: 2rem;
   cursor: pointer;
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.07);
-  margin-bottom: 1.5rem;
   transition: background 0.2s, transform 0.2s;
   text-decoration: none;
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cta-button:hover {
   background: #007aff;
+  color: #fff;
   transform: translateY(-2px) scale(1.03);
 }
 
