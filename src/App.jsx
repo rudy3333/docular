@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="landing-page">
+      {/* Header Navigation */}
+      <nav className="header-nav">
+        <span className="logo">Docular</span>
+        <div className="nav-links">
+          <a href="#how" className="nav-link">How it works</a>
+          <a href="#use-cases" className="nav-link">Use cases</a>
+          <a href="#pricing" className="nav-link">Pricing</a>
+          <a href="#help" className="nav-link">Help</a>
+          <a href="#login" className="nav-link">Log in</a>
+          <a href="#signup" className="nav-link cta-button" style={{padding: '0.5rem 1.5rem', fontSize: '1rem'}}>Sign up</a>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="hero">
+        <h1 className="hero-title">Everything You Need.<br />Before You Ask.</h1>
+        <p className="tagline">Docular is an AI that lets you chat with your documents and get instant answers — in real time.</p>
+        <a href="#get-started" className="cta-button">Get Started</a>
+      </header>
+
+      {/* Features Section */}
+      <section className="features">
+        <h2>Features</h2>
+        <ul>
+          <li>Upload your documents and ask questions in natural language</li>
+          <li>AI-powered answers tailored to your content</li>
+          <li>Secure, private, and fast</li>
+        </ul>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+        <p>&copy; {new Date().getFullYear()} Docular. All rights reserved.</p>
+      </footer>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  );
 }
 
-export default App
+export default App;
