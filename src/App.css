@@ -10,6 +10,10 @@ body, html, #root, .landing-page {
   overflow-x: hidden;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 *, *:before, *:after {
   box-sizing: inherit;
 }
@@ -333,6 +337,11 @@ body, html, #root, .landing-page {
   width: 100%;
 }
 
+.about-section, .testimonials-section, .cta-section, .features, .trusted-institutions {
+  max-width: 900px;
+  width: 94%;
+}
+
 @media (max-width: 900px) {
   .about-section, .testimonials-section, .cta-section, .trusted-institutions, .features {
     padding: 2rem 1rem;
@@ -367,4 +376,117 @@ body, html, #root, .landing-page {
     height: 28px;
     width: 50px;
   }
+}
+
+.signup-section {
+  margin-top: 3rem;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 400px;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.55);
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem 2rem 2rem;
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #1a5c1a;
+  margin-bottom: 0.2rem;
+  font-size: 1.08rem;
+}
+
+.form-group input {
+  padding: 0.8em 1em;
+  border-radius: 1em;
+  border: 1.5px solid #c2e9c2;
+  background: #f6fef6;
+  font-size: 1.08rem;
+  font-family: inherit;
+  transition: border 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-group input:focus {
+  border: 1.5px solid #007aff;
+  box-shadow: 0 2px 8px 0 rgba(0,122,255,0.08);
+}
+
+.signup-form .cta-button {
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.signup-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-modal-form {
+  position: relative;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.12);
+  padding: 0 0 0 0;
+  min-width: 700px;
+  max-width: 800px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+@media (max-width: 850px) {
+  .signup-modal-form {
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
+
+.signup-close-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #007aff;
+  cursor: pointer;
+  z-index: 10;
+  transition: color 0.2s;
+}
+.signup-close-btn:hover {
+  color: #111;
+}
+
+.signup-modal-form .signup-section {
+  margin: 0;
+  padding: 2.5rem 2rem 2rem 2rem;
+  border-radius: 2rem;
+  box-shadow: none;
+  background: none;
 }

@@ -1,17 +1,55 @@
 import './App.css';
+import React, { useState, useEffect } from "react";
+import SignUpPage from "./SignUpPage";
 
 function App() {
+  const [showSignUp, setShowSignUp] = useState(false);
+
+  useEffect(() => {
+    function customSmoothScroll(e) {
+      const anchor = e.target.closest('a[href^="#"]');
+      if (anchor && anchor.getAttribute('href').length > 1) {
+        const targetId = anchor.getAttribute('href').slice(1);
+        const target = document.getElementById(targetId) || document.querySelector(`[id='${targetId}']`);
+        if (target) {
+          e.preventDefault();
+          const startY = window.scrollY;
+          const endY = target.getBoundingClientRect().top + window.scrollY;
+          const duration = 1200; // ms, longer for smoother
+          const startTime = performance.now();
+
+          function easeInOutQuad(t) {
+            return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+          }
+
+          function animateScroll(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = easeInOutQuad(progress);
+            window.scrollTo(0, startY + (endY - startY) * ease);
+            if (progress < 1) {
+              requestAnimationFrame(animateScroll);
+            }
+          }
+
+          requestAnimationFrame(animateScroll);
+        }
+      }
+    }
+    document.addEventListener('click', customSmoothScroll);
+    return () => document.removeEventListener('click', customSmoothScroll);
+  }, []);
+
   return (
     <div className="landing-page">
       {/* Header Navigation */}
       <nav className="header-nav">
         <span className="logo">Docular</span>
         <div className="nav-links">
-          <a href="#how" className="nav-link">How it works</a>
-          <a href="#help" className="nav-link">Help</a>
-          <a href="#login" className="nav-link">Log in</a>
-          <a href="#signup" className="nav-link cta-button" style={{padding: '0.5rem 1.5rem', fontSize: '1rem'}}>Sign up</a>
-      </div>
+          <a className="nav-link" href="#about">About</a>
+          <a className="nav-link" href="#features">Features</a>
+          <button className="cta-button" onClick={() => setShowSignUp(true)} style={{ marginLeft: '1.5rem' }}>Sign Up</button>
+        </div>
       </nav>
 
       {/* Hero Section */}
@@ -22,7 +60,7 @@ function App() {
       </header>
 
       {/* About Section */}
-      <section className="about-section">
+      <section className="about-section" id="about">
         <h2>About Docular</h2>
         <p>Docular is revolutionizing the way students and professionals interact with their documents. Our AI-powered platform enables instant, intelligent conversations with your files, making research, studying, and information retrieval faster and easier than ever before.</p>
       </section>
@@ -48,7 +86,7 @@ function App() {
       </section>
 
       {/* Features Section */}
-      <section className="features">
+      <section className="features" id="features">
         <h2>Features</h2>
         <ul>
           <li>Upload your documents and ask questions in natural language</li>
@@ -71,7 +109,8 @@ function App() {
       <footer className="footer">
         <p>&copy; {new Date().getFullYear()} Docular. All rights reserved.</p>
       </footer>
-      </div>
+      {showSignUp && <SignUpPage onClose={() => setShowSignUp(false)} />}
+    </div>
   );
 }
 
