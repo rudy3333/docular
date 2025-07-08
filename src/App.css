@@ -460,6 +460,15 @@ html {
   align-items: stretch;
 }
 
+.signup-modal-form, .signup-modal-form * {
+  color: #000 !important;
+}
+
+.signup-modal-form .cta-button {
+  background: #111 !important;
+  color: #fff !important;
+}
+
 @media (max-width: 850px) {
   .signup-modal-form {
     min-width: 0;

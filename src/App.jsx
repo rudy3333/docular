@@ -1,9 +1,11 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
 import SignUpPage from "./SignUpPage";
+import LoginPage from "./LoginPage";
 
 function App() {
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
     function customSmoothScroll(e) {
@@ -49,6 +51,7 @@ function App() {
           <a className="nav-link" href="#about">About</a>
           <a className="nav-link" href="#features">Features</a>
           <button className="cta-button" onClick={() => setShowSignUp(true)} style={{ marginLeft: '1.5rem' }}>Sign Up</button>
+          <button className="cta-button" onClick={() => setShowLogin(true)} style={{ marginLeft: '0.5rem' }}>Login</button>
         </div>
       </nav>
 
@@ -109,7 +112,8 @@ function App() {
       <footer className="footer">
         <p>&copy; {new Date().getFullYear()} Docular. All rights reserved.</p>
       </footer>
-      {showSignUp && <SignUpPage onClose={() => setShowSignUp(false)} />}
+      {showSignUp && <SignUpPage onClose={() => setShowSignUp(false)} switchToLogin={() => { setShowSignUp(false); setShowLogin(true); }} />}
+      {showLogin && <LoginPage onClose={() => setShowLogin(false)} switchToSignUp={() => { setShowLogin(false); setShowSignUp(true); }} />}
       <div id="bottom" style={{height: '1px'}}></div>
     </div>
   );
