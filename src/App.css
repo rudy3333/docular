@@ -499,3 +499,22 @@ html {
   box-shadow: none;
   background: none;
 }
+
+.fade-enter {
+  opacity: 0;
+  transform: translateY(30px) scale(0.98);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(-30px) scale(0.98);
+  transition: opacity 0.4s cubic-bezier(0.4,0,0.2,1), transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}

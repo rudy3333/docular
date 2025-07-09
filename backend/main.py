@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, UploadFile, File
 from pydantic import BaseModel, EmailStr
 from fastapi.middleware.cors import CORSMiddleware
 import os
@@ -9,6 +9,9 @@ import jwt
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import requests
+import tempfile
+import base64
 
 load_dotenv()
 
@@ -99,6 +102,42 @@ def login(user: LoginRequest):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+@app.post("/upload_pdf")
+def upload_pdf(file: UploadFile = File(...), payload: dict = Depends(verify_token)):
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    api_key = os.getenv("AIRTABLE_API_KEY")
+    table_name = "pdfs"
+    if not base_id or not api_key:
+        return {"success": False, "error": "Missing AIRTABLE_BASE_ID or AIRTABLE_API_KEY in environment."}
+    try:
+        api = Api(api_key)
+        table = api.table(base_id, table_name)
+        user_email = payload["sub"]
+        record = table.create({
+            "filename": file.filename,
+            "uploaded_at": datetime.utcnow().isoformat(),
+            "user_email": user_email
+        })
+        record_id = record['id']
+        file_bytes = file.file.read()
+        file_b64 = base64.b64encode(file_bytes).decode('utf-8')
+        upload_url = f"https://content.airtable.com/v0/{base_id}/{record_id}/attachments/uploadAttachment"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "contentType": file.content_type,
+            "file": file_b64,
+            "filename": file.filename
+        }
+        upload_res = requests.post(upload_url, headers=headers, json=data)
+        if not upload_res.ok:
+            return {"success": False, "error": f"Airtable uploadAttachment failed: {upload_res.text}"}
+        return {"success": True, "pdf_id": record_id, "filename": file.filename}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Docular FastAPI backend!"}
@@ -115,5 +154,31 @@ def airtable_test():
         table = api.table(base_id, table_name)
         records = table.all(max_records=1)
         return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@app.get("/list_pdfs")
+def list_pdfs(payload: dict = Depends(verify_token)):
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    api_key = os.getenv("AIRTABLE_API_KEY")
+    table_name = "pdfs"
+    if not base_id or not api_key:
+        return {"success": False, "error": "Missing AIRTABLE_BASE_ID, AIRTABLE_API_KEY in environment."}
+    try:
+        api = Api(api_key)
+        table = api.table(base_id, table_name)
+        user_email = payload["sub"]
+        formula = f"{{user_email}} = '{user_email}'"
+        records = table.all(formula=formula)
+        pdfs = []
+        for rec in records:
+            fields = rec.get('fields', {})
+            pdfs.append({
+                "pdf_id": rec["id"],
+                "filename": fields.get("filename"),
+                "uploaded_at": fields.get("uploaded_at"),
+                "attachments": fields.get("attachments", [])
+            })
+        return {"success": True, "pdfs": pdfs}
     except Exception as e:
         return {"success": False, "error": str(e)}

@@ -8,6 +8,8 @@ export default defineConfig({
     proxy: {
       '/login': 'http://localhost:8000',
       '/signup': 'http://localhost:8000',
+      '/upload_pdf': 'http://localhost:8000',
+      '/list_pdfs': 'http://localhost:8000',
     }
   }
 })
