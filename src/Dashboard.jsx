@@ -22,6 +22,10 @@ function Dashboard({ onLogout }) {
       const res = await fetch("/list_pdfs", {
         headers: { "Authorization": `Bearer ${token}` }
       });
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         setUploadedDocs(data.pdfs);
@@ -55,6 +59,10 @@ function Dashboard({ onLogout }) {
         },
         body: formData
       });
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
       const data = await res.json();
       if (data.success) {
         setUploadMessage({ type: "success", text: `Uploaded: ${data.filename}` });
@@ -118,6 +126,10 @@ function Dashboard({ onLogout }) {
           const summaryRes = await fetch(`/pdf_summary/${activeDoc.pdf_id}`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
+          if (summaryRes.status === 401) {
+            onLogout();
+            return;
+          }
           const summaryData = await summaryRes.json();
           if (summaryData.success && summaryData.summary && chatMessages.length === 0) {
             let summaryText = summaryData.summary;
@@ -135,6 +147,10 @@ function Dashboard({ onLogout }) {
           const res = await fetch(`/pdf_content/${activeDoc.pdf_id}`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
+          if (res.status === 401) {
+            onLogout();
+            return;
+          }
           const data = await res.json();
           if (data.success) {
             if (data.summary && data.summary.state === "loading") {
@@ -264,6 +280,10 @@ function Dashboard({ onLogout }) {
                         method: 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}` }
                       });
+                      if (res.status === 401) {
+                        onLogout();
+                        return;
+                      }
                       const data = await res.json();
                       if (data.success) {
                         handleBackToDocs();
