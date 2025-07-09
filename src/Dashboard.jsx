@@ -115,7 +115,24 @@ function Dashboard({ onLogout }) {
       if (activeDoc && activeDoc.pdf_id) {
         try {
           const token = localStorage.getItem("token");
-          const res = await fetch(`/pdf_summary/${activeDoc.pdf_id}`, {
+          const summaryRes = await fetch(`/pdf_summary/${activeDoc.pdf_id}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          const summaryData = await summaryRes.json();
+          if (summaryData.success && summaryData.summary && chatMessages.length === 0) {
+            let summaryText = summaryData.summary;
+            if (typeof summaryText !== 'string') {
+              if (summaryText && typeof summaryText === 'object' && 'value' in summaryText) {
+                summaryText = summaryText.value;
+              } else {
+                summaryText = JSON.stringify(summaryText, null, 2);
+              }
+            }
+            setChatMessages([
+              { sender: "system", text: summaryText }
+            ]);
+          }
+          const res = await fetch(`/pdf_content/${activeDoc.pdf_id}`, {
             headers: { "Authorization": `Bearer ${token}` }
           });
           const data = await res.json();
