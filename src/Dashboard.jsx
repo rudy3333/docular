@@ -10,6 +10,8 @@ function Dashboard({ onLogout }) {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [summaryState, setSummaryState] = useState(null);
+  const [summaryData, setSummaryData] = useState(null);
 
   const fetchDocs = async () => {
     setLoadingDocs(true);
@@ -95,6 +97,52 @@ function Dashboard({ onLogout }) {
     setChatInput("");
   };
 
+  useEffect(() => {
+    let pollTimeout;
+    setSummaryState(null);
+    setSummaryData(null);
+    const fetchSummary = async () => {
+      if (activeDoc && activeDoc.pdf_id) {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await fetch(`/pdf_summary/${activeDoc.pdf_id}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          const data = await res.json();
+          if (data.success) {
+            if (data.summary && data.summary.state === "loading") {
+              setSummaryState("loading");
+              setSummaryData(null);
+              pollTimeout = setTimeout(fetchSummary, 1000);
+            } else if (data.summary && data.summary.state === "generated") {
+              setSummaryState("generated");
+              setSummaryData(data.summary);
+              console.log("[OCR SUMMARY]", data.summary);
+            } else {
+              setSummaryState(null);
+              setSummaryData(null);
+              console.warn("Unexpected summary state:", data.summary);
+            }
+          } else {
+            setSummaryState(null);
+            setSummaryData(null);
+            console.warn("Failed to fetch summary:", data.error);
+          }
+        } catch (err) {
+          setSummaryState(null);
+          setSummaryData(null);
+          console.error("Error fetching summary:", err);
+        }
+      }
+    };
+    if (activeDoc && activeDoc.pdf_id) {
+      fetchSummary();
+    }
+    return () => {
+      if (pollTimeout) clearTimeout(pollTimeout);
+    };
+  }, [activeDoc]);
+
   return (
     <div className="dashboard" style={{ maxWidth: 900, margin: "2rem auto", padding: "2rem", background: "#fff", borderRadius: 12, boxShadow: "0 2px 16px #0001" }}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -157,7 +205,9 @@ function Dashboard({ onLogout }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 32 }}>
           <div style={{ flex: 1, minWidth: 320, maxWidth: 480, background: '#f6f6f6', borderRadius: 8, padding: 16, boxSizing: 'border-box' }}>
             <button className="cta-button" style={{ marginBottom: 16 }} onClick={handleBackToDocs}>&larr; Back to Documents</button>
-            <h3 style={{ marginTop: 0 }}>{activeDoc.filename}</h3>
+            <h3 style={{ marginTop: 0, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '1.2rem' }} title={activeDoc.filename}>
+              {activeDoc.filename}
+            </h3>
             {activeDoc.attachments && activeDoc.attachments.length > 0 ? (
               <iframe
                 src={activeDoc.attachments[0].url}
@@ -172,8 +222,15 @@ function Dashboard({ onLogout }) {
           </div>
           <div style={{ flex: 1, minWidth: 320, maxWidth: 400, background: '#f9f9f9', borderRadius: 8, padding: 16, boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
             <h3 style={{ marginTop: 0 }}>Chat</h3>
+            {summaryState === 'loading' && (
+              <div style={{ textAlign: 'center', margin: '32px 0', color: '#888' }}>
+                <div className="spinner" style={{ margin: '0 auto 16px', width: 40, height: 40, border: '4px solid #eee', borderTop: '4px solid #22c55e', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                <div>This document is being processed...</div>
+                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+              </div>
+            )}
             <div style={{ flex: 1, overflowY: 'auto', marginBottom: 16, maxHeight: 400 }}>
-              {chatMessages.length === 0 ? (
+              {chatMessages.length === 0 && summaryState !== 'loading' ? (
                 <div style={{ color: '#888', textAlign: 'center', marginTop: 32 }}>
                   (No messages yet. Start the conversation!)
                 </div>

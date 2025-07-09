@@ -177,8 +177,26 @@ def list_pdfs(payload: dict = Depends(verify_token)):
                 "pdf_id": rec["id"],
                 "filename": fields.get("filename"),
                 "uploaded_at": fields.get("uploaded_at"),
-                "attachments": fields.get("attachments", [])
+                "attachments": fields.get("attachments", []),
+                "summary": fields.get("summary")
             })
         return {"success": True, "pdfs": pdfs}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@app.get("/pdf_summary/{pdf_id}")
+def get_pdf_summary(pdf_id: str, payload: dict = Depends(verify_token)):
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    api_key = os.getenv("AIRTABLE_API_KEY")
+    table_name = "pdfs"
+    if not base_id or not api_key:
+        return {"success": False, "error": "Missing AIRTABLE_BASE_ID, AIRTABLE_API_KEY in environment."}
+    try:
+        api = Api(api_key)
+        table = api.table(base_id, table_name)
+        record = table.get(pdf_id)
+        fields = record.get('fields', {})
+        summary = fields.get("summary")
+        return {"success": True, "summary": summary}
     except Exception as e:
         return {"success": False, "error": str(e)}

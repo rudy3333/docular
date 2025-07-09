@@ -10,6 +10,7 @@ export default defineConfig({
       '/signup': 'http://localhost:8000',
       '/upload_pdf': 'http://localhost:8000',
       '/list_pdfs': 'http://localhost:8000',
+      '/pdf_summary': 'http://localhost:8000',
     }
   }
 })
