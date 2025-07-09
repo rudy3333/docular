@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Dashboard({ onLogout }) {
   const fileInputRef = useRef();
@@ -6,12 +7,13 @@ function Dashboard({ onLogout }) {
   const [uploadMessage, setUploadMessage] = useState(null);
   const [uploadedDocs, setUploadedDocs] = useState([]);
   const [loadingDocs, setLoadingDocs] = useState(true);
-  const [activeDoc, setActiveDoc] = useState(null);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
   const [sending, setSending] = useState(false);
   const [summaryState, setSummaryState] = useState(null);
   const [summaryData, setSummaryData] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchDocs = async () => {
     setLoadingDocs(true);
@@ -69,9 +71,9 @@ function Dashboard({ onLogout }) {
   };
 
   const handleStartChat = (doc) => {
-    setActiveDoc(doc);
     setChatMessages([]);
     setChatInput("");
+    navigate(`/chat?id=${encodeURIComponent(doc.pdf_id)}`);
   };
 
   const handleSendMessage = async (e) => {
@@ -92,10 +94,18 @@ function Dashboard({ onLogout }) {
   };
 
   const handleBackToDocs = () => {
-    setActiveDoc(null);
     setChatMessages([]);
     setChatInput("");
+    navigate("/");
   };
+  let activeDoc = null;
+  if (location.pathname === '/chat') {
+    const params = new URLSearchParams(location.search);
+    const docId = params.get('id');
+    if (docId && uploadedDocs.length > 0) {
+      activeDoc = uploadedDocs.find(doc => String(doc.pdf_id) === String(docId));
+    }
+  }
 
   useEffect(() => {
     let pollTimeout;
@@ -149,7 +159,7 @@ function Dashboard({ onLogout }) {
         <h2 style={{ margin: 0 }}>📄 Docular Dashboard</h2>
         <button className="cta-button" onClick={onLogout}>Logout</button>
       </header>
-      {!activeDoc ? (
+      {location.pathname !== '/chat' ? (
         <>
           <section style={{ marginTop: "2rem" }}>
             <h3>Upload a PDF</h3>
@@ -206,8 +216,8 @@ function Dashboard({ onLogout }) {
           <div style={{ flex: 1, minWidth: 320, maxWidth: 480, background: '#f6f6f6', borderRadius: 8, padding: 16, boxSizing: 'border-box', position: 'relative' }}>
             <button className="cta-button" style={{ marginBottom: 16 }} onClick={handleBackToDocs}>&larr; Back to Documents</button>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <h3 style={{ marginTop: 0, marginBottom: 0, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '1.2rem', flex: 1 }} title={activeDoc.filename}>
-                {activeDoc.filename}
+              <h3 style={{ marginTop: 0, marginBottom: 0, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '1.2rem', flex: 1 }} title={activeDoc && activeDoc.filename}>
+                {activeDoc && activeDoc.filename}
               </h3>
               <button
                 className="cta-button"
@@ -253,7 +263,7 @@ function Dashboard({ onLogout }) {
                 <span role="img" aria-label="Delete">🗑️</span>
               </button>
             </div>
-            {activeDoc.attachments && activeDoc.attachments.length > 0 ? (
+            {activeDoc && activeDoc.attachments && activeDoc.attachments.length > 0 ? (
               <iframe
                 src={activeDoc.attachments[0].url}
                 title="PDF Preview"

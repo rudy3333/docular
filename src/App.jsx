@@ -4,12 +4,13 @@ import { CSSTransition, SwitchTransition } from "react-transition-group";
 import SignUpPage from "./SignUpPage";
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 function App() {
-  const [showSignUp, setShowSignUp] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const transitionRef = React.useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem('token'));
@@ -18,6 +19,7 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    navigate('/');
   };
 
   useEffect(() => {
@@ -56,13 +58,11 @@ function App() {
   }, []);
 
   const openSignUpModal = () => {
-    setShowSignUp(true);
-    setShowLogin(false);
+    navigate('/signup');
   };
 
   const openLoginModal = () => {
-    setShowLogin(true);
-    setShowSignUp(false);
+    navigate('/login');
   };
 
   return (
@@ -76,7 +76,11 @@ function App() {
       >
         <div ref={transitionRef}>
           {isLoggedIn ? (
-            <Dashboard onLogout={handleLogout} />
+            <Routes>
+              <Route path="/" element={<Dashboard onLogout={handleLogout} />} />
+              <Route path="/chat" element={<Dashboard onLogout={handleLogout} />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
           ) : (
             <div className="landing-page">
               {/* Header Navigation */}
@@ -85,14 +89,8 @@ function App() {
                 <div className="nav-links">
                   <a className="nav-link" href="#about">About</a>
                   <a className="nav-link" href="#features">Features</a>
-                  {isLoggedIn ? (
-                    <button className="cta-button" onClick={handleLogout}>Logout</button>
-                  ) : (
-                    <>
-                      <button className="cta-button" onClick={openLoginModal}>Login</button>
-                      <button className="cta-button" onClick={openSignUpModal}>Sign Up</button>
-                    </>
-                  )}
+                  <button className="cta-button" onClick={openLoginModal}>Login</button>
+                  <button className="cta-button" onClick={openSignUpModal}>Sign Up</button>
                 </div>
               </nav>
 
@@ -146,15 +144,17 @@ function App() {
               <section className="cta-section">
                 <h2>Ready to get started?</h2>
                 <p>Join thousands of students and professionals using Docular to supercharge their productivity.</p>
-                <button className="cta-button" style={{fontSize: '1.3rem', padding: '1.2rem 3rem'}} onClick={() => setShowSignUp(true)}>Sign Up Free</button>
+                <button className="cta-button" style={{fontSize: '1.3rem', padding: '1.2rem 3rem'}} onClick={openSignUpModal}>Sign Up Free</button>
               </section>
 
               {/* Footer */}
               <footer className="footer">
                 <p>&copy; {new Date().getFullYear()} Docular. All rights reserved.</p>
               </footer>
-              {showSignUp && <SignUpPage onClose={() => setShowSignUp(false)} switchToLogin={() => { setShowSignUp(false); setShowLogin(true); }} />}
-              {showLogin && <LoginPage onClose={() => setShowLogin(false)} switchToSignUp={() => { setShowLogin(false); setShowSignUp(true); }} setIsLoggedIn={setIsLoggedIn} />}
+              <Routes>
+                <Route path="/login" element={<LoginPage onClose={() => navigate('/')} switchToSignUp={() => navigate('/signup')} setIsLoggedIn={setIsLoggedIn} />} />
+                <Route path="/signup" element={<SignUpPage onClose={() => navigate('/')} switchToLogin={() => navigate('/login')} />} />
+              </Routes>
               <div id="bottom" style={{height: '1px'}}></div>
             </div>
           )}
