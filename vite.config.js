@@ -11,6 +11,7 @@ export default defineConfig({
       '/upload_pdf': 'http://localhost:8000',
       '/list_pdfs': 'http://localhost:8000',
       '/pdf_summary': 'http://localhost:8000',
+      '/delete_pdf': 'http://localhost:8000',
     }
   }
 })

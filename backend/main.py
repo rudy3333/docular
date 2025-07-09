@@ -138,6 +138,21 @@ def upload_pdf(file: UploadFile = File(...), payload: dict = Depends(verify_toke
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+@app.delete("/delete_pdf/{pdf_id}")
+def delete_pdf(pdf_id: str, payload: dict = Depends(verify_token)):
+    base_id = os.getenv("AIRTABLE_BASE_ID")
+    api_key = os.getenv("AIRTABLE_API_KEY")
+    table_name = "pdfs"
+    if not base_id or not api_key:
+        return {"success": False, "error": "Missing AIRTABLE_BASE_ID, AIRTABLE_API_KEY in environment."}
+    try:
+        api = Api(api_key)
+        table = api.table(base_id, table_name)
+        table.delete(pdf_id)
+        return {"success": True}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Docular FastAPI backend!"}

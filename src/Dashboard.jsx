@@ -203,11 +203,56 @@ function Dashboard({ onLogout }) {
         </>
       ) : (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 32 }}>
-          <div style={{ flex: 1, minWidth: 320, maxWidth: 480, background: '#f6f6f6', borderRadius: 8, padding: 16, boxSizing: 'border-box' }}>
+          <div style={{ flex: 1, minWidth: 320, maxWidth: 480, background: '#f6f6f6', borderRadius: 8, padding: 16, boxSizing: 'border-box', position: 'relative' }}>
             <button className="cta-button" style={{ marginBottom: 16 }} onClick={handleBackToDocs}>&larr; Back to Documents</button>
-            <h3 style={{ marginTop: 0, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '1.2rem' }} title={activeDoc.filename}>
-              {activeDoc.filename}
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <h3 style={{ marginTop: 0, marginBottom: 0, maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '1.2rem', flex: 1 }} title={activeDoc.filename}>
+                {activeDoc.filename}
+              </h3>
+              <button
+                className="cta-button"
+                title="Delete document"
+                style={{
+                  background: '#ff4d4f',
+                  color: '#fff',
+                  borderRadius: '50%',
+                  width: 28,
+                  height: 28,
+                  minWidth: 28,
+                  minHeight: 28,
+                  padding: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 15,
+                  border: 'none',
+                  cursor: 'pointer',
+                  marginLeft: 4
+                }}
+                onClick={async () => {
+                  if (window.confirm('Are you sure you want to delete this document? This action cannot be undone.')) {
+                    try {
+                      const token = localStorage.getItem('token');
+                      const res = await fetch(`/delete_pdf/${activeDoc.pdf_id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        handleBackToDocs();
+                        fetchDocs();
+                      } else {
+                        alert('Failed to delete document: ' + (data.error || 'Unknown error'));
+                      }
+                    } catch (err) {
+                      alert('Network error while deleting document.');
+                    }
+                  }
+                }}
+              >
+                <span role="img" aria-label="Delete">🗑️</span>
+              </button>
+            </div>
             {activeDoc.attachments && activeDoc.attachments.length > 0 ? (
               <iframe
                 src={activeDoc.attachments[0].url}
